@@ -1,7 +1,7 @@
 import { Component } from 'react';
 import PropTypes from 'prop-types';
 import { inject, observer } from 'mobx-react';
-import { Router, Route, IndexRedirect } from 'react-router';
+import { BrowseRouter, Route, Redirect, Switch } from 'react-router';
 
 import AppLayoutContainer from './containers/layout/AppLayoutContainer';
 import SettingsWindow from './containers/settings/SettingsWindow';
@@ -43,10 +43,11 @@ class Routes extends Component {
     }
 
     return (
-      <Router history={history}>
+      <BrowseRouter>
+      <div>
         <Route path="/" component={AppLayoutContainer}>
-          <Route path="/settings" component={SettingsWindow}>
-            <IndexRedirect to="/settings/recipes" />
+          <Route path="/settings" render={() => <Redirect to ="/settings/recipes" component={SettingsWindow} />} />
+            <Switch>
             <Route path="/settings/recipes" component={RecipesScreen} />
             <Route path="/settings/recipes/:filter" component={RecipesScreen} />
             <Route path="/settings/services" component={ServicesScreen} />
@@ -65,25 +66,26 @@ class Routes extends Component {
             <Route path="/settings/app" component={EditSettingsScreen} />
             <Route path="/settings/invite" component={InviteSettingsScreen} />
             <Route path="/settings/support" component={SupportFerdiScreen} />
-          </Route>
+          </Switch>
         </Route>
-        <Route path="/auth" component={AuthLayoutContainer}>
-          <IndexRedirect to="/auth/welcome" />
+        <Route path="/auth" render={() => <Redirect to="/auth/welcome" component={AuthLayoutContainer} />} />
+          <Switch >
           <Route path="/auth/welcome" component={WelcomeScreen} />
           <Route path="/auth/login" component={LoginScreen} />
           <Route path="/auth/server" component={ChangeServerScreen} />
-          <Route path="/auth/signup">
-            <IndexRedirect to="/auth/signup/form" />
+          <Route path="/auth/signup" render={() => <Redirect to="/auth/signup/form" />} />
+          <Switch>
             <Route path="/auth/signup/form" component={SignupScreen} />
             <Route path="/auth/signup/import" component={ImportScreen} />
             <Route path="/auth/signup/setup" component={SetupAssistentScreen} />
             <Route path="/auth/signup/invite" component={InviteScreen} />
-          </Route>
+          </Switch>
           <Route path="/auth/password" component={PasswordScreen} />
           <Route path="/auth/logout" component={LoginScreen} />
-        </Route>
+        </Switch>
         <Route path="*" component={AppLayoutContainer} />
-      </Router>
+        </div>
+      </BrowseRouter>
     );
   }
 }
