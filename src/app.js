@@ -3,7 +3,7 @@ import { webFrame } from 'electron';
 import { render } from 'react-dom';
 import { Provider } from 'mobx-react';
 import { syncHistoryWithStore, RouterStore } from 'mobx-react-router';
-import { hashHistory } from 'react-router';
+import { createBrowserHistory } from 'history';
 
 import ServerApi from './api/server/ServerApi';
 import LocalApi from './api/server/LocalApi';
@@ -24,7 +24,8 @@ window.addEventListener('load', () => {
   const api = apiFactory(serverApi, new LocalApi());
   const router = new RouterStore();
   const stores = storeFactory(api, actions, router);
-  const history = syncHistoryWithStore(hashHistory, router);
+  const browserHistory = createBrowserHistory();
+  const history = syncHistoryWithStore(browserHistory, router);
   const menu = new MenuFactory(stores, actions);
   const touchBar = new TouchBarFactory(stores, actions);
 

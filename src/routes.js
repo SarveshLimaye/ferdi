@@ -1,7 +1,8 @@
 import { Component } from 'react';
 import PropTypes from 'prop-types';
 import { inject, observer } from 'mobx-react';
-import { BrowseRouter, Route, Redirect, Switch } from 'react-router';
+import { Route, Redirect, Switch } from 'react-router';
+import { BrowserRouter } from 'react-router-dom';
 
 import AppLayoutContainer from './containers/layout/AppLayoutContainer';
 import SettingsWindow from './containers/settings/SettingsWindow';
@@ -36,56 +37,54 @@ class Routes extends Component {
   render() {
     const { locked } = this.props.stores.settings.app;
 
-    const { history } = this.props;
-
     if (locked) {
       return <LockedScreen />;
     }
 
     return (
-      <BrowseRouter>
-      <div>
-        <Route path="/" component={AppLayoutContainer}>
-          <Route path="/settings" render={() => <Redirect to ="/settings/recipes" component={SettingsWindow} />} />
+      <BrowserRouter>
+        <div>
+          <Route path="/" component={AppLayoutContainer}>
+            <Route path="/settings" render={() => <Redirect to="/settings/recipes" />} component={SettingsWindow} />
             <Switch>
-            <Route path="/settings/recipes" component={RecipesScreen} />
-            <Route path="/settings/recipes/:filter" component={RecipesScreen} />
-            <Route path="/settings/services" component={ServicesScreen} />
-            <Route
-              path="/settings/services/:action/:id"
-              component={EditServiceScreen}
-            />
-            <Route path={WORKSPACES_ROUTES.ROOT} component={WorkspacesScreen} />
-            <Route
-              path={WORKSPACES_ROUTES.EDIT}
-              component={EditWorkspaceScreen}
-            />
-            <Route path="/settings/user" component={AccountScreen} />
-            <Route path="/settings/user/edit" component={EditUserScreen} />
-            <Route path="/settings/team" component={TeamScreen} />
-            <Route path="/settings/app" component={EditSettingsScreen} />
-            <Route path="/settings/invite" component={InviteSettingsScreen} />
-            <Route path="/settings/support" component={SupportFerdiScreen} />
-          </Switch>
-        </Route>
-        <Route path="/auth" render={() => <Redirect to="/auth/welcome" component={AuthLayoutContainer} />} />
-          <Switch >
-          <Route path="/auth/welcome" component={WelcomeScreen} />
-          <Route path="/auth/login" component={LoginScreen} />
-          <Route path="/auth/server" component={ChangeServerScreen} />
-          <Route path="/auth/signup" render={() => <Redirect to="/auth/signup/form" />} />
+              <Route path="/settings/recipes" component={RecipesScreen} />
+              <Route path="/settings/recipes/:filter" component={RecipesScreen} />
+              <Route path="/settings/services" component={ServicesScreen} />
+              <Route
+                path="/settings/services/:action/:id"
+                component={EditServiceScreen}
+              />
+              <Route path={WORKSPACES_ROUTES.ROOT} component={WorkspacesScreen} />
+              <Route
+                path={WORKSPACES_ROUTES.EDIT}
+                component={EditWorkspaceScreen}
+              />
+              <Route path="/settings/user" component={AccountScreen} />
+              <Route path="/settings/user/edit" component={EditUserScreen} />
+              <Route path="/settings/team" component={TeamScreen} />
+              <Route path="/settings/app" component={EditSettingsScreen} />
+              <Route path="/settings/invite" component={InviteSettingsScreen} />
+              <Route path="/settings/support" component={SupportFerdiScreen} />
+            </Switch>
+          </Route>
+          <Route path="/auth" render={() => <Redirect to="/auth/welcome" />} component={AuthLayoutContainer} />
           <Switch>
-            <Route path="/auth/signup/form" component={SignupScreen} />
-            <Route path="/auth/signup/import" component={ImportScreen} />
-            <Route path="/auth/signup/setup" component={SetupAssistentScreen} />
-            <Route path="/auth/signup/invite" component={InviteScreen} />
+            <Route path="/auth/welcome" component={WelcomeScreen} />
+            <Route path="/auth/login" component={LoginScreen} />
+            <Route path="/auth/server" component={ChangeServerScreen} />
+            <Route path="/auth/signup" render={() => <Redirect to="/auth/signup/form" />} />
+            <Switch>
+              <Route path="/auth/signup/form" component={SignupScreen} />
+              <Route path="/auth/signup/import" component={ImportScreen} />
+              <Route path="/auth/signup/setup" component={SetupAssistentScreen} />
+              <Route path="/auth/signup/invite" component={InviteScreen} />
+            </Switch>
+            <Route path="/auth/password" component={PasswordScreen} />
+            <Route path="/auth/logout" component={LoginScreen} />
           </Switch>
-          <Route path="/auth/password" component={PasswordScreen} />
-          <Route path="/auth/logout" component={LoginScreen} />
-        </Switch>
-        <Route path="*" component={AppLayoutContainer} />
+          <Route path="*" component={AppLayoutContainer} />
         </div>
-      </BrowseRouter>
+      </BrowserRouter>
     );
   }
 }
@@ -94,7 +93,6 @@ Routes.wrappedComponent.propTypes = {
   stores: PropTypes.shape({
     settings: PropTypes.instanceOf(SettingsStore).isRequired,
   }).isRequired,
-  history: PropTypes.any.isRequired,
 };
 
 export default Routes;
