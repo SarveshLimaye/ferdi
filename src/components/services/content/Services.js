@@ -1,7 +1,7 @@
 import { Component } from 'react';
 import PropTypes from 'prop-types';
 import { observer, PropTypes as MobxPropTypes, inject } from 'mobx-react';
-import { Link } from 'react-router';
+import { Link } from 'react-router-dom';
 import { defineMessages, injectIntl } from 'react-intl';
 import Confetti from 'react-confetti';
 import ms from 'ms';
