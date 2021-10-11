@@ -112,6 +112,7 @@ Routes.wrappedComponent.propTypes = {
   stores: PropTypes.shape({
     settings: PropTypes.instanceOf(SettingsStore).isRequired,
   }).isRequired,
+  history: PropTypes.any.isRequired,
 };
 
 export default Routes;
