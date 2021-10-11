@@ -3,6 +3,7 @@ import PropTypes from 'prop-types';
 import { inject, observer } from 'mobx-react';
 import { RouterStore } from 'mobx-react-router';
 import classnames from 'classnames';
+import { NavLink } from 'react-router-dom';
 
 import { oneOrManyChildElements } from '../../prop-types';
 import { matchRoute } from '../../helpers/routing-helpers';
@@ -48,14 +49,14 @@ class Link extends Component {
     });
 
     return (
-      <a
-        href={router.history.createHref(to)}
+      <NavLink
+        to={to}
         className={linkClasses}
         style={style}
         onClick={e => this.onClick(e)}
       >
         {children}
-      </a>
+      </NavLink>
     );
   }
 }

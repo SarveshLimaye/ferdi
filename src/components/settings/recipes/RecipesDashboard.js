@@ -2,7 +2,7 @@ import { Component } from 'react';
 import PropTypes from 'prop-types';
 import { observer, PropTypes as MobxPropTypes } from 'mobx-react';
 import { defineMessages, injectIntl } from 'react-intl';
-import { Link } from 'react-router-dom';
+import { NavLink } from 'react-router-dom';
 
 import injectSheet from 'react-jss';
 
@@ -144,8 +144,8 @@ class RecipesDashboard extends Component {
     } = this.props;
     const { intl } = this.props;
 
-    const communityRecipes = recipes.filter(r => !r.isDevRecipe);
-    const devRecipes = recipes.filter(r => r.isDevRecipe);
+    const communityRecipes = recipes?.filter(r => !r.isDevRecipe);
+    const devRecipes = recipes?.filter(r => r.isDevRecipe);
 
     const isLoggedIn = Boolean(localStorage.getItem('authToken'));
 
@@ -174,22 +174,22 @@ class RecipesDashboard extends Component {
             throttle
           />
           <div className="recipes__navigation">
-            <Link
+            <NavLink
               to="/settings/recipes"
               className="badge"
               activeClassName={`${!searchNeedle ? 'badge--primary' : ''}`}
               onClick={() => resetSearch()}
             >
               {intl.formatMessage(messages.allRecipes)}
-            </Link>
-            <Link
+            </NavLink>
+            <NavLink
               to="/settings/recipes/dev"
               className="badge"
               activeClassName={`${!searchNeedle ? 'badge--primary' : ''}`}
               onClick={() => resetSearch()}
             >
               {intl.formatMessage(messages.customRecipes)}
-            </Link>
+            </NavLink>
             <a
               href={FRANZ_SERVICE_REQUEST}
               target="_blank"
@@ -230,11 +230,11 @@ class RecipesDashboard extends Component {
                   </div>
                 </>
               )}
-              {recipeFilter === 'dev' && communityRecipes.length > 0 && (
+              {recipeFilter === 'dev' && communityRecipes?.length > 0 && (
                 <H3>{intl.formatMessage(messages.headlineCommunityRecipes)}</H3>
               )}
               <div className="recipes__list">
-                {recipes.length === 0 && recipeFilter !== 'dev' && (
+                {recipes && recipes.length === 0 && recipeFilter !== 'dev' && (
                   <div className="align-middle settings__empty-state">
                     <span className="emoji">
                       <img src="./assets/images/emoji/dontknow.png" alt="" />
@@ -256,7 +256,7 @@ class RecipesDashboard extends Component {
                     />
                   </div>
                 )}
-                {communityRecipes.map(recipe => (
+                {communityRecipes?.map(recipe => (
                   <RecipeItem
                     key={recipe.id}
                     recipe={recipe}

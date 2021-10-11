@@ -35,7 +35,7 @@ class RecipesScreen extends Component {
   };
 
   state = {
-    needle: null,
+    needle: '',
     currentFilter: 'featured',
   };
 
@@ -126,7 +126,7 @@ class RecipesScreen extends Component {
     } else if (filter === 'dev') {
       recipeFilter = communityRecipesStore.communityRecipes;
     }
-    recipeFilter = recipeFilter.sort(this._sortByName);
+    recipeFilter = recipeFilter?.sort(this._sortByName);
 
     const allRecipes = this.state.needle
       ? this.prepareRecipes([
