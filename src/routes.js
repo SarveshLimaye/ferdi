@@ -1,7 +1,9 @@
 import { Component } from 'react';
 import PropTypes from 'prop-types';
 import { inject, observer } from 'mobx-react';
-import { BrowserRouter, Route, Redirect, Switch } from 'react-router-dom';
+import { Router, Route, Redirect, Switch } from 'react-router-dom';
+import { createBrowserHistory } from "history";
+
 
 import AppLayoutContainer from './containers/layout/AppLayoutContainer';
 import SettingsWindow from './containers/settings/SettingsWindow';
@@ -34,14 +36,17 @@ import SettingsStore from './stores/SettingsStore';
 @observer
 class Routes extends Component {
   render() {
+   
+
     const { locked } = this.props.stores.settings.app;
+    const customHistory = createBrowserHistory();
 
     if (locked) {
       return <LockedScreen />;
     }
 
     return (
-      <BrowserRouter>
+      <Router history={customHistory}>
         <div>
           <Route path="/" component={AppLayoutContainer}>
             <Route path="/settings" render={() => <Redirect to="/settings/recipes" />} component={SettingsWindow} />
@@ -83,7 +88,7 @@ class Routes extends Component {
           </Switch>
           <Route path="*" component={AppLayoutContainer} />
         </div>
-      </BrowserRouter>
+      </Router>
     );
   }
 }
