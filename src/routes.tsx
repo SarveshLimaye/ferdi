@@ -50,33 +50,65 @@ class Routes extends Component<Props> {
       <Router history={history}>
         <div>
           <Route path="/" component={AppLayoutContainer}>
-            <Route path="/settings" render={() => <Redirect to="/settings/recipes" />} component={SettingsWindow}>
+            <Route
+              path="/settings"
+              render={() => <Redirect to="/settings/recipes" />}
+              component={SettingsWindow}
+            >
               <Switch>
                 <Route path="/settings/recipes" component={RecipesScreen} />
-                <Route path="/settings/recipes/:filter" component={RecipesScreen} />
+                <Route
+                  path="/settings/recipes/:filter"
+                  component={RecipesScreen}
+                />
                 <Route path="/settings/services" component={ServicesScreen} />
-                <Route path="/settings/services/:action/:id" component={EditServiceScreen} />
-                <Route path={WORKSPACES_ROUTES.ROOT} component={WorkspacesScreen} />
-                <Route path={WORKSPACES_ROUTES.EDIT} component={EditWorkspaceScreen} />
+                <Route
+                  path="/settings/services/:action/:id"
+                  component={EditServiceScreen}
+                />
+                <Route
+                  path={WORKSPACES_ROUTES.ROOT}
+                  component={WorkspacesScreen}
+                />
+                <Route
+                  path={WORKSPACES_ROUTES.EDIT}
+                  component={EditWorkspaceScreen}
+                />
                 <Route path="/settings/user" component={AccountScreen} />
                 <Route path="/settings/user/edit" component={EditUserScreen} />
                 <Route path="/settings/team" component={TeamScreen} />
                 <Route path="/settings/app" component={EditSettingsScreen} />
-                <Route path="/settings/invite" component={InviteSettingsScreen} />
-                <Route path="/settings/support" component={SupportFerdiScreen} />
+                <Route
+                  path="/settings/invite"
+                  component={InviteSettingsScreen}
+                />
+                <Route
+                  path="/settings/support"
+                  component={SupportFerdiScreen}
+                />
               </Switch>
             </Route>
           </Route>
-          <Route path="/auth" render={() => <Redirect to="/auth/welcome" />} component={AuthLayoutContainer}>
+          <Route
+            path="/auth"
+            render={() => <Redirect to="/auth/welcome" />}
+            component={AuthLayoutContainer}
+          >
             <Switch>
               <Route path="/auth/welcome" component={WelcomeScreen} />
               <Route path="/auth/login" component={LoginScreen} />
               <Route path="/auth/server" component={ChangeServerScreen} />
-              <Route path="/auth/signup" render={() => <Redirect to="/auth/signup/form" />} />
+              <Route
+                path="/auth/signup"
+                render={() => <Redirect to="/auth/signup/form" />}
+              />
               <Switch>
                 <Route path="/auth/signup/form" component={SignupScreen} />
                 <Route path="/auth/signup/import" component={ImportScreen} />
-                <Route path="/auth/signup/setup" component={SetupAssistentScreen} />
+                <Route
+                  path="/auth/signup/setup"
+                  component={SetupAssistentScreen}
+                />
                 <Route path="/auth/signup/invite" component={InviteScreen} />
               </Switch>
               <Route path="/auth/password" component={PasswordScreen} />
