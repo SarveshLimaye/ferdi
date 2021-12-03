@@ -406,7 +406,7 @@ const createWindow = () => {
     ) {
       // Toggle the window on 'Alt+X'
       globalShortcut.register(`${altKey()}+X`, () => {
-        trayIcon.trayMenuTemplate[0].click();
+        trayIcon._toggleWindow();
       });
     }
   });
@@ -516,6 +516,7 @@ ipcMain.on('open-browser-window', (_e, { url, serviceId }) => {
   const serviceSession = session.fromPartition(`persist:service-${serviceId}`);
   const child = new BrowserWindow({
     parent: mainWindow,
+    fullscreenable: false,
     webPreferences: {
       session: serviceSession,
       // TODO: Aren't these needed here?
@@ -625,6 +626,10 @@ ipcMain.on('set-spellchecker-locales', (_e, { locale, serviceId }) => {
   const locales = [locale, defaultLocale, DEFAULT_APP_SETTINGS.fallbackLocale];
   debug(`Setting spellchecker locales to: ${locales}`);
   serviceSession.setSpellCheckerLanguages(locales);
+});
+
+ipcMain.on('window.toolbar-double-clicked', () => {
+  mainWindow?.isMaximized() ? mainWindow.unmaximize() : mainWindow?.maximize();
 });
 
 // Quit when all windows are closed.

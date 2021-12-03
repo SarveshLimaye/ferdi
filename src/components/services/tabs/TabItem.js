@@ -9,10 +9,12 @@ import injectSheet from 'react-jss';
 import ms from 'ms';
 
 import { observable, autorun, reaction } from 'mobx';
+import { mdiExclamation } from '@mdi/js';
 import ServiceModel from '../../../models/Service';
-import { cmdOrCtrlShortcutKey } from '../../../environment';
+import { cmdOrCtrlShortcutKey, shiftKey, altKey } from '../../../environment';
 import globalMessages from '../../../i18n/globalMessages';
 import SettingsStore from '../../../stores/SettingsStore';
+import { Icon } from '../../ui/icon';
 
 const IS_SERVICE_DEBUGGING_ENABLED = (
   localStorage.getItem('debug') || ''
@@ -132,6 +134,7 @@ class TabItem extends Component {
     hibernateService: PropTypes.func.isRequired,
     wakeUpService: PropTypes.func.isRequired,
     showMessageBadgeWhenMutedSetting: PropTypes.bool.isRequired,
+    showServiceNameSetting: PropTypes.bool.isRequired,
     showMessageBadgesEvenWhenMuted: PropTypes.bool.isRequired,
     stores: PropTypes.shape({
       settings: PropTypes.instanceOf(SettingsStore).isRequired,
@@ -219,6 +222,7 @@ class TabItem extends Component {
       wakeUpService,
       openSettings,
       showMessageBadgeWhenMutedSetting,
+      showServiceNameSetting,
       showMessageBadgesEvenWhenMuted,
     } = this.props;
     const { intl } = this.props;
@@ -251,24 +255,28 @@ class TabItem extends Component {
           ? intl.formatMessage(messages.disableNotifications)
           : intl.formatMessage(messages.enableNotifications),
         click: () => toggleNotifications(),
+        accelerator: `${cmdOrCtrlShortcutKey()}+${altKey()}+N`,
       },
       {
         label: service.isMuted
           ? intl.formatMessage(messages.enableAudio)
           : intl.formatMessage(messages.disableAudio),
         click: () => toggleAudio(),
+        accelerator: `${cmdOrCtrlShortcutKey()}+${shiftKey()}+A`,
       },
       {
         label: service.isDarkModeEnabled
           ? intl.formatMessage(messages.disableDarkMode)
           : intl.formatMessage(messages.enableDarkMode),
         click: () => toggleDarkMode(),
+        accelerator: `${shiftKey()}+${altKey()}+D`,
       },
       {
         label: intl.formatMessage(
           service.isEnabled ? messages.disableService : messages.enableService,
         ),
         click: () => (service.isEnabled ? disableService() : enableService()),
+        accelerator: `${cmdOrCtrlShortcutKey()}+${shiftKey()}+S`,
       },
       {
         label: intl.formatMessage(
@@ -331,6 +339,13 @@ class TabItem extends Component {
       );
     }
 
+    let errorBadge = null;
+    if (service.isError) {
+      errorBadge = (
+        <Icon icon={mdiExclamation} className="tab-item__error-icon" />
+      );
+    }
+
     return (
       <li
         className={classnames({
@@ -340,6 +355,7 @@ class TabItem extends Component {
           'is-active': service.isActive,
           'has-custom-icon': service.hasCustomIcon,
           'is-disabled': !service.isEnabled,
+          'is-label-enabled': showServiceNameSetting,
         })}
         onClick={clickHandler}
         onContextMenu={() => menu.popup()}
@@ -349,8 +365,17 @@ class TabItem extends Component {
             : ''
         }`}
       >
-        <img src={service.icon} className="tab-item__icon" alt="" />
+        {showServiceNameSetting ? (
+          <div>
+            <img src={service.icon} className="tab-item__icon" alt="" />
+            <span className="tab-item__label">{service.name}</span>
+          </div>
+        ) : (
+          <img src={service.icon} className="tab-item__icon" alt="" />
+        )}
+
         {notificationBadge}
+        {errorBadge}
         {IS_SERVICE_DEBUGGING_ENABLED && (
           <>
             <div

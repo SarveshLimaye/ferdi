@@ -140,13 +140,6 @@ export const ICON_SIZES = {
 // The bias should always be the "Normal icons" value
 export const iconSizeBias = 20;
 
-export const DEFAULT_FEATURES_CONFIG = {
-  isServiceProxyEnabled: true,
-  isWorkspaceEnabled: true,
-  isTodosEnabled: true,
-  isSettingsWSEnabled: false,
-};
-
 export const DEFAULT_WINDOW_OPTIONS = {
   width: 800,
   height: 600,
@@ -179,6 +172,9 @@ export const CUSTOM_WEBSITE_RECIPE_ID = 'franz-custom-website';
 
 export const DEFAULT_SERVICE_ORDER = 99; // something high enough that it gets added to the end of the already-added services on the left sidebar
 
+export const SPLIT_COLUMNS_MIN = 1;
+export const SPLIT_COLUMNS_MAX = 5;
+
 export const DEFAULT_APP_SETTINGS = {
   autoLaunchOnStart: false,
   autoLaunchInBackground: false,
@@ -193,12 +189,14 @@ export const DEFAULT_APP_SETTINGS = {
   clipboardNotifications: true,
   notifyTaskBarOnMessage: false,
   showDisabledServices: true,
+  showServiceName: false,
   showMessageBadgeWhenMuted: true,
   showDragArea: false,
   enableSpellchecking: true,
   spellcheckerLanguage: 'en-us',
   darkMode: false,
   splitMode: false,
+  splitColumns: 3,
   fallbackLocale: 'en-US',
   beta: false,
   isAppMuted: false,
@@ -235,4 +233,27 @@ export const DEFAULT_APP_SETTINGS = {
   alwaysShowWorkspaces: false,
   liftSingleInstanceLock: false,
   enableLongPressServiceHint: false,
+  proxyFeatureEnabled: false,
+  onlyShowFavoritesInUnreadCount: false,
+};
+
+export const DEFAULT_SERVICE_SETTINGS = {
+  isEnabled: true,
+  isHibernationEnabled: false,
+  isWakeUpEnabled: true,
+  isNotificationEnabled: true,
+  isBadgeEnabled: true,
+  isMuted: false,
+  customIcon: false,
+  isDarkModeEnabled: false,
+  // Note: Do NOT change these default values. If they change, then the corresponding changes in the recipes needs to be done
+  hasDirectMessages: true,
+  hasIndirectMessages: false,
+  hasNotificationSound: false,
+  hasTeamId: false,
+  hasCustomUrl: false,
+  hasHostedOption: false,
+  allowFavoritesDelineationInUnreadCount: false,
+  disablewebsecurity: false,
+  autoHibernate: false,
 };

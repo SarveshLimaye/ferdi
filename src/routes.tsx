@@ -1,5 +1,4 @@
 import { Component } from 'react';
-import PropTypes from 'prop-types';
 import { inject, observer } from 'mobx-react';
 import { Router, Route, Redirect, Switch } from 'react-router-dom';
 import AppLayoutContainer from './containers/layout/AppLayoutContainer';
@@ -29,9 +28,16 @@ import { WORKSPACES_ROUTES } from './features/workspaces/constants';
 
 import SettingsStore from './stores/SettingsStore';
 
+type Props = {
+  stores: {
+    settings: typeof SettingsStore;
+  };
+  history: any;
+};
+
 @inject('stores', 'actions')
 @observer
-class Routes extends Component {
+class Routes extends Component<Props> {
   render() {
     const { locked } = this.props.stores.settings.app;
     const { history } = this.props;
@@ -83,12 +89,5 @@ class Routes extends Component {
     );
   }
 }
-
-Routes.wrappedComponent.propTypes = {
-  stores: PropTypes.shape({
-    settings: PropTypes.instanceOf(SettingsStore).isRequired,
-  }).isRequired,
-  history: PropTypes.any.isRequired,
-};
 
 export default Routes;

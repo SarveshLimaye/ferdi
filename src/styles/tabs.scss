@@ -1,6 +1,8 @@
 @import './config.scss';
 
 .theme__dark .tab-item {
+  color: $dark-theme-text-color;
+
   &.is-active {
     background: $dark-theme-gray;
 
@@ -52,6 +54,25 @@
     .tab-item__icon {
       margin-left: -4px;
     }
+    .tab-item__label {
+      margin-left: -4px;
+    }
+  }
+
+  &.is-label-enabled{
+    height: min-content;
+    overflow: hidden;
+    padding-top: 8px;
+    padding-bottom: 8px;
+  }
+
+  .tab-item__label {
+    display: block;
+    margin-top: 6px;
+    font-size: 11px;
+    padding-left: 4px;
+    padding-right: 4px;
+    line-height: 13px;
   }
 
   &.is-disabled .tab-item__icon {
@@ -73,7 +94,7 @@
     align-items: center;
     background: $theme-brand-danger;
     border-radius: 20px;
-    bottom: 8px;
+    top: 8px;
     color: #fff;
     display: flex;
     font-size: 11px;
@@ -135,5 +156,14 @@
 
   &.is-reordering {
     z-index: 99999;
+  }
+
+  .tab-item__error-icon{
+    font-size: 1.9em;
+    color: red;
+    position: absolute;
+    top: 6px;
+    right: 0px;
+    transform: scaleX(1.5);
   }
 }

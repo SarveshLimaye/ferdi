@@ -82,6 +82,8 @@ module.exports = {
         'react/sort-comp': 0,
         'react/state-in-constructor': 0,
         'react/static-property-placement': 0,
+        'react/function-component-definition': 0,
+        'react/jsx-no-useless-fragment': 0,
         //  eslint-plugin-jsx-a11y
         'jsx-a11y/click-events-have-key-events': 1,
         'jsx-a11y/mouse-events-have-key-events': 1,
@@ -115,6 +117,8 @@ module.exports = {
           },
         ],
         'unicorn/consistent-destructuring': 0,
+        // INFO: Turned off due to src/internal-server/database/factory.js
+        'unicorn/no-empty-file': 0,
         // eslint-plugin-prettier
         'prettier/prettier': 1,
       },
@@ -127,6 +131,9 @@ module.exports = {
     'consistent-return': 1,
     'implicit-arrow-linebreak': 0,
     indent: 0,
+    // TODO: Turn this rule on once the js to ts conversions are over
+    // This is necessary as workaround for window.ferdi vs window['ferdi']
+    'dot-notation': 0,
     'function-paren-newline': 0,
     'linebreak-style': 0,
     'max-len': 0,
@@ -162,6 +169,8 @@ module.exports = {
     'react/static-property-placement': 0,
     'react/state-in-constructor': 1,
     'react/sort-comp': 0,
+    'react/function-component-definition': 0,
+    'react/jsx-no-useless-fragment': 0,
     //  eslint-plugin-jsx-a11y
     'jsx-a11y/click-events-have-key-events': 1,
     'jsx-a11y/no-static-element-interactions': 1,
@@ -184,6 +193,8 @@ module.exports = {
       },
     ],
     'unicorn/consistent-destructuring': 0,
+    // INFO: Turned off due to src/internal-server/database/factory.js
+    'unicorn/no-empty-file': 0,
     // eslint-plugin-prettier
     'prettier/prettier': 1,
   },

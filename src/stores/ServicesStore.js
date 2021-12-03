@@ -15,7 +15,7 @@ import {
   getDevRecipeDirectory,
 } from '../helpers/recipe-helpers';
 import { workspaceStore } from '../features/workspaces';
-import { KEEP_WS_LOADED_USID } from '../config';
+import { DEFAULT_SERVICE_SETTINGS, KEEP_WS_LOADED_USID } from '../config';
 import { SPELLCHECKER_LOCALES } from '../i18n/languages';
 import { ferdiVersion } from '../environment-remote';
 
@@ -82,6 +82,7 @@ export default class ServicesStore extends Store {
     this.actions.service.setUnreadMessageCount.listen(
       this._setUnreadMessageCount.bind(this),
     );
+    this.actions.service.setDialogTitle.listen(this._setDialogTitle.bind(this));
     this.actions.service.openWindow.listen(this._openWindow.bind(this));
     this.actions.service.filter.listen(this._filter.bind(this));
     this.actions.service.resetFilter.listen(this._resetFilter.bind(this));
@@ -170,6 +171,13 @@ export default class ServicesStore extends Store {
     );
 
     reaction(
+      () => this.stores.settings.app.splitColumns,
+      () => {
+        this._shareSettingsWithServiceProcess();
+      },
+    );
+
+    reaction(
       () => this.stores.settings.app.searchEngine,
       () => {
         this._shareSettingsWithServiceProcess();
@@ -224,6 +232,7 @@ export default class ServicesStore extends Store {
         }
 
         if (
+          service.isWakeUpEnabled &&
           service.lastHibernated &&
           Number(this.stores.settings.all.app.wakeUpStrategy) > 0 &&
           Date.now() - service.lastHibernated >
@@ -394,16 +403,15 @@ export default class ServicesStore extends Store {
     }
 
     // set default values for serviceData
-
-    // TODO: How is this different from the defaults of the recipe in 'src/models/Recipe' file?
     serviceData = {
-      isEnabled: true,
-      isHibernationEnabled: false,
-      isNotificationEnabled: true,
-      isBadgeEnabled: true,
-      isMuted: false,
-      customIcon: false,
-      isDarkModeEnabled: false,
+      isEnabled: DEFAULT_SERVICE_SETTINGS.isEnabled,
+      isHibernationEnabled: DEFAULT_SERVICE_SETTINGS.isHibernationEnabled,
+      isWakeUpEnabled: DEFAULT_SERVICE_SETTINGS.isWakeUpEnabled,
+      isNotificationEnabled: DEFAULT_SERVICE_SETTINGS.isNotificationEnabled,
+      isBadgeEnabled: DEFAULT_SERVICE_SETTINGS.isBadgeEnabled,
+      isMuted: DEFAULT_SERVICE_SETTINGS.isMuted,
+      customIcon: DEFAULT_SERVICE_SETTINGS.customIcon,
+      isDarkModeEnabled: DEFAULT_SERVICE_SETTINGS.isDarkModeEnabled,
       spellcheckerLanguage:
         SPELLCHECKER_LOCALES[this.stores.settings.app.spellcheckerLanguage],
       userAgentPref: '',
@@ -579,7 +587,10 @@ export default class ServicesStore extends Store {
     const service = this.one(serviceId);
 
     for (const s of this.all) {
-      s.isActive = false;
+      if (s.isActive) {
+        s.lastUsed = Date.now();
+        s.isActive = false;
+      }
     }
     service.isActive = true;
     this._awake({ serviceId: service.id });
@@ -616,12 +627,7 @@ export default class ServicesStore extends Store {
       this.allDisplayed.length,
     );
 
-    for (const s of this.all) {
-      s.isActive = false;
-    }
-    this.allDisplayed[nextIndex].isActive = true;
-
-    this._focusActiveService();
+    this._setActive({ serviceId: this.allDisplayed[nextIndex].id });
   }
 
   @action _setActivePrev() {
@@ -631,12 +637,7 @@ export default class ServicesStore extends Store {
       this.allDisplayed.length,
     );
 
-    for (const s of this.all) {
-      s.isActive = false;
-    }
-    this.allDisplayed[prevIndex].isActive = true;
-
-    this._focusActiveService();
+    this._setActive({ serviceId: this.allDisplayed[prevIndex].id });
   }
 
   @action _setUnreadMessageCount({ serviceId, count }) {
@@ -646,22 +647,28 @@ export default class ServicesStore extends Store {
     service.unreadIndirectMessageCount = count.indirect;
   }
 
-  @action _setWebviewReference({ serviceId, webview }) {
+  @action _setDialogTitle({ serviceId, dialogTitle }) {
     const service = this.one(serviceId);
 
-    service.webview = webview;
+    service.dialogTitle = dialogTitle;
+  }
 
-    if (!service.isAttached) {
-      debug('Webview is not attached, initializing');
-      service.initializeWebViewEvents({
-        handleIPCMessage: this.actions.service.handleIPCMessage,
-        openWindow: this.actions.service.openWindow,
-        stores: this.stores,
-      });
-      service.initializeWebViewListener();
+  @action _setWebviewReference({ serviceId, webview }) {
+    const service = this.one(serviceId);
+    if (service) {
+      service.webview = webview;
+
+      if (!service.isAttached) {
+        debug('Webview is not attached, initializing');
+        service.initializeWebViewEvents({
+          handleIPCMessage: this.actions.service.handleIPCMessage,
+          openWindow: this.actions.service.openWindow,
+          stores: this.stores,
+        });
+        service.initializeWebViewListener();
+      }
+      service.isAttached = true;
     }
-
-    service.isAttached = true;
   }
 
   @action _detachService({ service }) {
@@ -683,17 +690,22 @@ export default class ServicesStore extends Store {
       // TODO: add checks to not focus service when router path is /settings or /auth
       const service = this.active;
       if (service) {
-        this._focusService({ serviceId: service.id });
-        if (this.stores.settings.app.splitMode && !focusEvent) {
-          setTimeout(() => {
-            document
-              .querySelector('.services__webview-wrapper.is-active')
-              .scrollIntoView({
-                behavior: 'smooth',
-                block: 'end',
-                inline: 'nearest',
-              });
-          }, 10);
+        if (service._webview) {
+          document.title = `Ferdi - ${service.name} ${
+            service.dialogTitle ? ` - ${service.dialogTitle}` : ''
+          } ${service._webview ? `- ${service._webview.getTitle()}` : ''}`;
+          this._focusService({ serviceId: service.id });
+          if (this.stores.settings.app.splitMode && !focusEvent) {
+            setTimeout(() => {
+              document
+                .querySelector('.services__webview-wrapper.is-active')
+                .scrollIntoView({
+                  behavior: 'smooth',
+                  block: 'end',
+                  inline: 'nearest',
+                });
+            }, 10);
+          }
         }
       } else {
         debug('No service is active');
@@ -737,6 +749,16 @@ export default class ServicesStore extends Store {
             direct: args[0].direct,
             indirect: args[0].indirect,
           },
+        });
+
+        break;
+      }
+      case 'active-dialog-title': {
+        debug(`Received active dialog title from '${serviceId}'`, args[0]);
+
+        this.actions.service.setDialogTitle({
+          serviceId,
+          dialogTitle: args[0],
         });
 
         break;
@@ -1063,7 +1085,9 @@ export default class ServicesStore extends Store {
     const service = this.active;
     if (service) {
       this.actions.service.focusService({ serviceId: service.id });
-      document.title = `Ferdi - ${service.name}`;
+      document.title = `Ferdi - ${service.name} ${
+        service.dialogTitle ? ` - ${service.dialogTitle}` : ''
+      } ${service._webview ? `- ${service._webview.getTitle()}` : ''}`;
     } else {
       debug('No service is active');
     }

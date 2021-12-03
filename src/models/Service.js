@@ -37,6 +37,8 @@ export default class Service {
 
   @observable unreadIndirectMessageCount = 0;
 
+  @observable dialogTitle = '';
+
   @observable order = DEFAULT_SERVICE_ORDER;
 
   @observable isEnabled = true;
@@ -80,6 +82,8 @@ export default class Service {
   @observable restrictionType = null;
 
   @observable isHibernationEnabled = false;
+
+  @observable isWakeUpEnabled = true;
 
   @observable isHibernationRequested = false;
 
@@ -163,9 +167,13 @@ export default class Service {
       data.isHibernationEnabled,
       this.isHibernationEnabled,
     );
+    this.isWakeUpEnabled = ifUndefinedBoolean(
+      data.isWakeUpEnabled,
+      this.isWakeUpEnabled,
+    );
 
     // Check if "Hibernate on Startup" is enabled and hibernate all services except active one
-    const { hibernateOnStartup } = window.ferdi.stores.settings.app;
+    const { hibernateOnStartup } = window['ferdi'].stores.settings.app;
     // The service store is probably not loaded yet so we need to use localStorage data to get active service
     const isActive =
       window.localStorage.service &&
@@ -230,6 +238,7 @@ export default class Service {
       let url;
       try {
         url = normalizeUrl(this.customUrl, {
+          stripAuthentication: false,
           stripWWW: false,
           removeTrailingSlash: false,
         });

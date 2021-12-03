@@ -231,7 +231,6 @@ interface TodosStore {
   actions: Actions;
   api: Api;
   isFeatureActive: () => void;
-  isFeatureEnabled: () => void;
   isInitialized: true;
   stores: Stores;
   userAgentModel: () => void;
@@ -246,7 +245,6 @@ interface TodosStore {
   _reactions: any[];
   _reload: () => void;
   _routeCheckReaction: () => void;
-  _setFeatureEnabledReaction: () => void;
   _updateSettings: () => void;
   _updateTodosConfig: () => void;
   isFeatureEnabledByUser: () => void;
@@ -278,6 +276,7 @@ interface UIStore {
   actionStatus: () => void;
   isDarkThemeActive: () => void;
   isSplitModeActive: () => void;
+  splitColumnsNo: () => void;
   showMessageBadgesEvenWhenMuted: () => void;
   theme: () => void;
 }
@@ -343,7 +342,6 @@ export interface WorkspacesStore {
   saving: boolean;
   filterServicesByActiveWorkspace: () => void;
   isFeatureActive: () => void;
-  isFeatureEnabled: () => void;
   isSettingsRouteActive: () => void;
   isSwitchingWorkspace: () => void;
   isWorkspaceDrawerOpen: () => void;
@@ -359,7 +357,6 @@ export interface WorkspacesStore {
   _openDrawerWithSettingsReaction: () => void;
   _reactions: any[];
   _setActiveServiceOnWorkspaceSwitchReaction: () => void;
-  _setFeatureEnabledReaction: () => void;
   _setWorkspaceBeingEditedReaction: () => void;
   _toggleKeepAllWorkspacesLoadedSetting: () => void;
   _updateSettings: () => void;

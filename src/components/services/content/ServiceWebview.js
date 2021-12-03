@@ -30,6 +30,15 @@ class ServiceWebview extends Component {
           this.webview.view.addEventListener('console-message', e => {
             debug('Service logged a message:', e.message);
           });
+          this.webview.view.addEventListener('did-navigate', () => {
+            if (this.props.service._webview) {
+              document.title = `Ferdi - ${this.props.service.name} ${
+                this.props.service.dialogTitle
+                  ? ` - ${this.props.service.dialogTitle}`
+                  : ''
+              } ${`- ${this.props.service._webview.getTitle()}`}`;
+            }
+          });
         }
       },
     );
@@ -47,6 +56,13 @@ class ServiceWebview extends Component {
     if (this.props.service.isActive) {
       webview.view.blur();
       webview.view.focus();
+      window.setTimeout(() => {
+        document.title = `Ferdi - ${this.props.service.name} ${
+          this.props.service.dialogTitle
+            ? ` - ${this.props.service.dialogTitle}`
+            : ''
+        } ${`- ${this.props.service._webview.getTitle()}`}`;
+      }, 100);
     } else {
       debug('Refocus not required - Not active service');
     }

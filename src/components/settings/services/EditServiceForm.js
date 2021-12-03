@@ -5,6 +5,7 @@ import { Link } from 'react-router-dom';
 import { defineMessages, injectIntl } from 'react-intl';
 import normalizeUrl from 'normalize-url';
 
+import { mdiInformation } from '@mdi/js';
 import Form from '../../../lib/Form';
 import Recipe from '../../../models/Recipe';
 import Service from '../../../models/Service';
@@ -19,6 +20,7 @@ import Select from '../../ui/Select';
 
 import { isMac } from '../../../environment';
 import globalMessages from '../../../i18n/globalMessages';
+import { Icon } from '../../ui/icon';
 
 const messages = defineMessages({
   saveService: {
@@ -180,6 +182,7 @@ class EditServiceForm extends Component {
           this.setState({ isValidatingCustomUrl: true });
           try {
             values.customUrl = normalizeUrl(values.customUrl, {
+              stripAuthentication: false,
               stripWWW: false,
               removeTrailingSlash: false,
             });
@@ -315,7 +318,7 @@ class EditServiceForm extends Component {
                   marginTop: 0,
                 }}
               >
-                <span className="mdi mdi-information" />
+                <Icon icon={mdiInformation} />
                 {recipe.message}
               </p>
             )}
@@ -356,6 +359,7 @@ class EditServiceForm extends Component {
                   <p className="settings__help indented__help">
                     {intl.formatMessage(messages.isHibernationEnabledInfo)}
                   </p>
+                  <Toggle field={form.$('isWakeUpEnabled')} />
                   <Toggle field={form.$('isDarkModeEnabled')} />
                   {form.$('isDarkModeEnabled').value && (
                     <>
@@ -414,11 +418,11 @@ class EditServiceForm extends Component {
                       </div>
                     </div>
                     <p>
-                      <span className="mdi mdi-information" />
+                      <Icon icon={mdiInformation} />
                       {intl.formatMessage(messages.proxyRestartInfo)}
                     </p>
                     <p>
-                      <span className="mdi mdi-information" />
+                      <Icon icon={mdiInformation} />
                       {intl.formatMessage(messages.proxyInfo)}
                     </p>
                   </>
@@ -457,7 +461,7 @@ class EditServiceForm extends Component {
                 />
               </div>
               <p style={{ marginTop: 10, marginBottom: 10 }}>
-                <span className="mdi mdi-information" />
+                <Icon icon={mdiInformation} />
                 {intl.formatMessage(messages.recipeFileInfo)}
               </p>
             </>

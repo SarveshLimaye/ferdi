@@ -23,9 +23,11 @@ import RecipeWebview from './lib/RecipeWebview';
 import Userscript from './lib/Userscript';
 
 import { BadgeHandler } from './badge';
+import { DialogTitleHandler } from './dialogTitle';
 import { SessionHandler } from './sessionHandler';
 import contextMenu from './contextMenu';
 import {
+  darkModeStyleExists,
   injectDarkModeStyle,
   isDarkModeStyleInjected,
   removeDarkModeStyle,
@@ -50,6 +52,8 @@ import { DEFAULT_APP_SETTINGS } from '../config';
 const debug = require('debug')('Ferdi:Plugin');
 
 const badgeHandler = new BadgeHandler();
+
+const dialogTitleHandler = new DialogTitleHandler();
 
 const sessionHandler = new SessionHandler();
 
@@ -106,6 +110,7 @@ contextBridge.exposeInMainWorld('ferdi', {
   open: window.open,
   setBadge: (direct, indirect) => badgeHandler.setBadge(direct, indirect),
   safeParseInt: text => badgeHandler.safeParseInt(text),
+  setDialogTitle: title => dialogTitleHandler.setDialogTitle(title),
   displayNotification: (title, options) =>
     notificationsHandler.displayNotification(title, options),
   getDisplayMediaSelector,
@@ -200,6 +205,7 @@ class RecipeController {
     try {
       this.recipe = new RecipeWebview(
         badgeHandler,
+        dialogTitleHandler,
         notificationsHandler,
         sessionHandler,
       );
@@ -315,15 +321,6 @@ class RecipeController {
     ) {
       debug('Enable dark mode');
 
-      // Check if recipe has a darkmode.css
-      const darkModeStyle = join(
-        this.settings.service.recipe.path,
-        'darkmode.css',
-      );
-      const darkModeExists = pathExistsSync(darkModeStyle);
-
-      debug('darkmode.css exists? ', darkModeExists);
-
       // Check if recipe has a custom dark mode handler
       if (this.recipe && this.recipe.darkModeHandler) {
         debug('Using custom dark mode handler');
@@ -336,8 +333,8 @@ class RecipeController {
         }
 
         this.recipe.darkModeHandler(true, handlerConfig);
-      } else if (darkModeExists) {
-        debug('Injecting darkmode.css');
+      } else if (darkModeStyleExists(this.settings.service.recipe.path)) {
+        debug('Injecting darkmode from recipe');
         injectDarkModeStyle(this.settings.service.recipe.path);
 
         // Make sure universal dark mode is disabled
@@ -374,7 +371,7 @@ class RecipeController {
 
         this.recipe.darkModeHandler(false, handlerConfig);
       } else if (isDarkModeStyleInjected()) {
-        debug('Removing injected darkmode.css');
+        debug('Removing injected darkmode from recipe');
         removeDarkModeStyle();
       } else {
         debug('Removing Dark Reader');
@@ -431,6 +428,9 @@ class RecipeController {
         const locale = await ipcRenderer.invoke('detect-language', {
           sample: value,
         });
+        if (!locale) {
+          return;
+        }
 
         const spellcheckerLocale =
           getSpellcheckerLocaleByFuzzyIdentifier(locale);

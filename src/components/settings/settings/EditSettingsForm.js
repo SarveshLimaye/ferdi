@@ -5,6 +5,7 @@ import { observer } from 'mobx-react';
 import prettyBytes from 'pretty-bytes';
 import { defineMessages, injectIntl } from 'react-intl';
 
+import { mdiGithub, mdiInformation, mdiOpenInNew } from '@mdi/js';
 import Form from '../../../lib/Form';
 import Button from '../../ui/Button';
 import Toggle from '../../ui/Toggle';
@@ -16,6 +17,8 @@ import {
   DEFAULT_APP_SETTINGS,
   FRANZ_TRANSLATION,
   GITHUB_FRANZ_URL,
+  SPLIT_COLUMNS_MAX,
+  SPLIT_COLUMNS_MIN,
 } from '../../../config';
 import { isMac, isWindows, lockFerdiShortcutKey } from '../../../environment';
 import {
@@ -25,6 +28,7 @@ import {
 } from '../../../environment-remote';
 import { openPath } from '../../../helpers/url-helpers';
 import globalMessages from '../../../i18n/globalMessages';
+import { Icon } from '../../ui/icon';
 
 const debug = require('debug')('Ferdi:EditSettingsForm');
 
@@ -176,6 +180,10 @@ const messages = defineMessages({
     defaultMessage:
       'Official translations are English & German. All other languages are community based translations.',
   },
+  numberOfColumns: {
+    id: 'settings.app.form.splitColumns',
+    defaultMessage: 'Number of columns',
+  },
 });
 
 const Hr = () => <hr style={{ marginBottom: 20 }} />;
@@ -194,12 +202,11 @@ class EditSettingsForm extends Component {
     isClearingAllCache: PropTypes.bool.isRequired,
     onClearAllCache: PropTypes.func.isRequired,
     getCacheSize: PropTypes.func.isRequired,
-    isTodosEnabled: PropTypes.bool.isRequired,
     isTodosActivated: PropTypes.bool.isRequired,
-    isWorkspaceEnabled: PropTypes.bool.isRequired,
     automaticUpdates: PropTypes.bool.isRequired,
     isDarkmodeEnabled: PropTypes.bool.isRequired,
     isAdaptableDarkModeEnabled: PropTypes.bool.isRequired,
+    isSplitModeEnabled: PropTypes.bool.isRequired,
     isNightlyEnabled: PropTypes.bool.isRequired,
     hasAddedTodosAsService: PropTypes.bool.isRequired,
     isOnline: PropTypes.bool.isRequired,
@@ -244,10 +251,9 @@ class EditSettingsForm extends Component {
       isClearingAllCache,
       onClearAllCache,
       getCacheSize,
-      isTodosEnabled,
-      isWorkspaceEnabled,
       automaticUpdates,
       isDarkmodeEnabled,
+      isSplitModeEnabled,
       isTodosActivated,
       isNightlyEnabled,
       hasAddedTodosAsService,
@@ -265,7 +271,7 @@ class EditSettingsForm extends Component {
     }
 
     const { lockingFeatureEnabled, scheduledDNDEnabled } =
-      window.ferdi.stores.settings.all.app;
+      window['ferdi'].stores.settings.all.app;
 
     let cacheSize;
     let notCleared;
@@ -414,14 +420,10 @@ class EditSettingsForm extends Component {
 
                 <Hr />
 
-                {isWorkspaceEnabled && (
-                  <>
-                    <Toggle field={form.$('keepAllWorkspacesLoaded')} />
-                    <Hr />
-                  </>
-                )}
+                <Toggle field={form.$('keepAllWorkspacesLoaded')} />
+                <Hr />
 
-                {isTodosEnabled && !hasAddedTodosAsService && (
+                {!hasAddedTodosAsService && (
                   <>
                     <Toggle field={form.$('enableTodos')} />
                     {isTodosActivated && (
@@ -511,6 +513,7 @@ class EditSettingsForm extends Component {
             {this.state.activeSetttingsTab === 'appearance' && (
               <div>
                 <Toggle field={form.$('showDisabledServices')} />
+                <Toggle field={form.$('showServiceName')} />
                 <Toggle field={form.$('showMessageBadgeWhenMuted')} />
 
                 {isMac && <Toggle field={form.$('showDragArea')} />}
@@ -543,6 +546,16 @@ class EditSettingsForm extends Component {
                 <Hr />
 
                 <Toggle field={form.$('splitMode')} />
+                {isSplitModeEnabled && (
+                  <Input
+                    type="number"
+                    min={SPLIT_COLUMNS_MIN}
+                    max={SPLIT_COLUMNS_MAX}
+                    placeholder={`${SPLIT_COLUMNS_MIN}-${SPLIT_COLUMNS_MAX}`}
+                    onChange={e => this.submit(e)}
+                    field={form.$('splitColumns')}
+                  />
+                )}
 
                 <Hr />
 
@@ -669,7 +682,7 @@ class EditSettingsForm extends Component {
                   rel="noreferrer"
                 >
                   {intl.formatMessage(messages.translationHelp)}{' '}
-                  <i className="mdi mdi-open-in-new" />
+                  <Icon icon={mdiOpenInNew} />
                 </a>
               </div>
             )}
@@ -768,7 +781,7 @@ class EditSettingsForm extends Component {
                         name: 'Nightly builds',
                       }}
                       onChange={
-                        window.ferdi.features.nightlyBuilds.toggleFeature
+                        window['ferdi'].features.nightlyBuilds.toggleFeature
                       }
                     />
                     {updateIsReadyToInstall ? (
@@ -802,7 +815,7 @@ class EditSettingsForm extends Component {
                   </>
                 )}
                 <p className="settings__message">
-                  <span className="mdi mdi-github-face" />
+                  <Icon icon={mdiGithub} />
                   <span>
                     Ferdi is based on{' '}
                     <a
@@ -822,7 +835,7 @@ class EditSettingsForm extends Component {
                     </a>
                   </span>
                   <br />
-                  <span className="mdi mdi-information" />
+                  <Icon icon={mdiInformation} />
                   {intl.formatMessage(messages.languageDisclaimer)}
                 </p>
               </div>

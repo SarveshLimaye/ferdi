@@ -1,10 +1,9 @@
+/* eslint-disable react/jsx-no-useless-fragment */
 import { Component } from 'react';
 import PropTypes from 'prop-types';
 import { observer, PropTypes as MobxPropTypes, inject } from 'mobx-react';
 import { defineMessages, injectIntl } from 'react-intl';
 import injectSheet from 'react-jss';
-
-import { mdiCheckboxMarkedCircleOutline } from '@mdi/js';
 
 import { Infobox } from '../../../components/ui/infobox/index';
 import Loader from '../../../components/ui/Loader';
@@ -110,7 +109,7 @@ class WorkspacesDashboard extends Component {
             <Appear className={classes.appear}>
               <Infobox
                 type="success"
-                icon={mdiCheckboxMarkedCircleOutline}
+                icon="checkbox-marked-circle-outline"
                 dismissable
                 onUnmount={updateWorkspaceRequest.reset}
               >
@@ -124,7 +123,7 @@ class WorkspacesDashboard extends Component {
             <Appear className={classes.appear}>
               <Infobox
                 type="success"
-                icon={mdiCheckboxMarkedCircleOutline}
+                icon="checkbox-marked-circle-outline"
                 dismissable
                 onUnmount={deleteWorkspaceRequest.reset}
               >

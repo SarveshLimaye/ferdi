@@ -8,7 +8,6 @@ import UserStore from '../../stores/UserStore';
 import RecipesStore from '../../stores/RecipesStore';
 import ServicesStore from '../../stores/ServicesStore';
 import SettingsStore from '../../stores/SettingsStore';
-import FeaturesStore from '../../stores/FeaturesStore';
 import Form from '../../lib/Form';
 
 import ServiceError from '../../components/settings/services/ServiceError';
@@ -23,6 +22,7 @@ import { config as proxyFeature } from '../../features/serviceProxy';
 import { SPELLCHECKER_LOCALES } from '../../i18n/languages';
 
 import globalMessages from '../../i18n/globalMessages';
+import { DEFAULT_APP_SETTINGS, DEFAULT_SERVICE_SETTINGS } from '../../config';
 
 const messages = defineMessages({
   name: {
@@ -36,6 +36,10 @@ const messages = defineMessages({
   enableHibernation: {
     id: 'settings.service.form.enableHibernation',
     defaultMessage: 'Enable hibernation',
+  },
+  enableWakeUp: {
+    id: 'settings.service.form.enableWakeUp',
+    defaultMessage: 'Enable wake up',
   },
   enableNotification: {
     id: 'settings.service.form.enableNotification',
@@ -171,7 +175,7 @@ class EditServiceScreen extends Component {
         isEnabled: {
           label: intl.formatMessage(messages.enableService),
           value: service.isEnabled,
-          default: true,
+          default: DEFAULT_SERVICE_SETTINGS.isEnabled,
         },
         isHibernationEnabled: {
           label: intl.formatMessage(messages.enableHibernation),
@@ -179,22 +183,27 @@ class EditServiceScreen extends Component {
             action !== 'edit'
               ? recipe.autoHibernate
               : service.isHibernationEnabled,
-          default: true,
+          default: DEFAULT_SERVICE_SETTINGS.isHibernationEnabled,
+        },
+        isWakeUpEnabled: {
+          label: intl.formatMessage(messages.enableWakeUp),
+          value: service.isWakeUpEnabled,
+          default: DEFAULT_SERVICE_SETTINGS.isWakeUpEnabled,
         },
         isNotificationEnabled: {
           label: intl.formatMessage(messages.enableNotification),
           value: service.isNotificationEnabled,
-          default: true,
+          default: DEFAULT_SERVICE_SETTINGS.isNotificationEnabled,
         },
         isBadgeEnabled: {
           label: intl.formatMessage(messages.enableBadge),
           value: service.isBadgeEnabled,
-          default: true,
+          default: DEFAULT_SERVICE_SETTINGS.isBadgeEnabled,
         },
         isMuted: {
           label: intl.formatMessage(messages.enableAudio),
           value: !service.isMuted,
-          default: true,
+          default: DEFAULT_SERVICE_SETTINGS.isMuted,
         },
         customIcon: {
           label: intl.formatMessage(messages.icon),
@@ -257,7 +266,7 @@ class EditServiceScreen extends Component {
       Object.assign(config.fields, {
         customUrl: {
           label: intl.formatMessage(messages.customUrl),
-          placeholder: 'https://',
+          placeholder: "'http://' or 'https://' or 'file:///'",
           value: service.customUrl || recipe.serviceURL,
           validators: [required, url],
         },
@@ -288,7 +297,7 @@ class EditServiceScreen extends Component {
         isIndirectMessageBadgeEnabled: {
           label: intl.formatMessage(messages.indirectMessages),
           value: service.isIndirectMessageBadgeEnabled,
-          default: true,
+          default: DEFAULT_SERVICE_SETTINGS.hasIndirectMessages,
         },
       });
     }
@@ -298,7 +307,7 @@ class EditServiceScreen extends Component {
         onlyShowFavoritesInUnreadCount: {
           label: intl.formatMessage(messages.onlyShowFavoritesInUnreadCount),
           value: service.onlyShowFavoritesInUnreadCount,
-          default: false,
+          default: DEFAULT_APP_SETTINGS.onlyShowFavoritesInUnreadCount,
         },
       });
     }
@@ -314,7 +323,7 @@ class EditServiceScreen extends Component {
             isEnabled: {
               label: intl.formatMessage(messages.enableProxy),
               value: serviceProxyConfig.isEnabled,
-              default: false,
+              default: DEFAULT_APP_SETTINGS.proxyFeatureEnabled,
             },
             host: {
               label: intl.formatMessage(messages.proxyHost),
@@ -435,7 +444,6 @@ EditServiceScreen.wrappedComponent.propTypes = {
     recipes: PropTypes.instanceOf(RecipesStore).isRequired,
     services: PropTypes.instanceOf(ServicesStore).isRequired,
     settings: PropTypes.instanceOf(SettingsStore).isRequired,
-    features: PropTypes.instanceOf(FeaturesStore).isRequired,
   }).isRequired,
   router: PropTypes.instanceOf(RouterStore).isRequired,
   actions: PropTypes.shape({

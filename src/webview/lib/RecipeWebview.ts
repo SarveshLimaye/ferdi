@@ -5,8 +5,22 @@ import { pathExistsSync, readFileSync, existsSync } from 'fs-extra';
 const debug = require('debug')('Ferdi:Plugin:RecipeWebview');
 
 class RecipeWebview {
-  constructor(badgeHandler, notificationsHandler, sessionHandler) {
+  badgeHandler: any;
+
+  dialogTitleHandler: any;
+
+  notificationsHandler: any;
+
+  sessionHandler: any;
+
+  constructor(
+    badgeHandler,
+    dialogTitleHandler,
+    notificationsHandler,
+    sessionHandler,
+  ) {
     this.badgeHandler = badgeHandler;
+    this.dialogTitleHandler = dialogTitleHandler;
     this.notificationsHandler = notificationsHandler;
     this.sessionHandler = sessionHandler;
 
@@ -59,6 +73,17 @@ class RecipeWebview {
   }
 
   /**
+   * Set the active dialog title to the app title
+   *
+   * @param {string | undefined | null} title                Set the active dialog title
+   *                                                         to the app title
+   *                                                         eg. WhatsApp contact name
+   */
+  setDialogTitle(title) {
+    this.dialogTitleHandler.setDialogTitle(title);
+  }
+
+  /**
    * Safely parse the given text into an integer
    *
    * @param  {string | number | undefined | null} text to be parsed
@@ -80,9 +105,12 @@ class RecipeWebview {
         const styles = document.createElement('style');
         styles.innerHTML = readFileSync(file, 'utf8');
 
-        document.querySelector('head').append(styles);
+        const head = document.querySelector('head');
 
-        debug('Append styles', styles);
+        if (head) {
+          head.append(styles);
+          debug('Append styles', styles);
+        }
       }
     });
   }
@@ -127,7 +155,10 @@ class RecipeWebview {
   }
 
   clearStorageData(serviceId, targetsToClear) {
-    ipcRenderer.send('clear-storage-data', { serviceId, targetsToClear });
+    ipcRenderer.send('clear-storage-data', {
+      serviceId,
+      targetsToClear,
+    });
   }
 
   releaseServiceWorkers() {

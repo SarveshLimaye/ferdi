@@ -105,8 +105,6 @@ class Login extends Component {
     this.props.intl,
   );
 
-  emailField = null;
-
   submit(e) {
     e.preventDefault();
     this.form.submit({
@@ -155,25 +153,21 @@ class Login extends Component {
               {intl.formatMessage(messages.serverLogout)}
             </p>
           )}
-          <Input
-            field={form.$('email')}
-            ref={element => {
-              this.emailField = element;
-            }}
-            focus
-          />
+          <Input field={form.$('email')} focus />
           <Input field={form.$('password')} showPasswordToggle />
           {error.code === 'invalid-credentials' && (
             <>
               <p className="error-message center">
                 {intl.formatMessage(messages.invalidCredentials)}
               </p>
-              {window.ferdi.stores.settings.all.app.server !==
+              {window['ferdi'].stores.settings.all.app.server !==
                 LIVE_FRANZ_API && (
                 <p className="error-message center">
                   {intl.formatMessage(messages.customServerQuestion)}{' '}
                   <Link
-                    to={`${window.ferdi.stores.settings.all.app.server.replace(
+                    to={`${window[
+                      'ferdi'
+                    ].stores.settings.all.app.server.replace(
                       API_VERSION,
                       '',
                     )}/import`}

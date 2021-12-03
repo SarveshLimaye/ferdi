@@ -20,6 +20,8 @@ import {
   DEFAULT_SETTING_KEEP_ALL_WORKSPACES_LOADED,
   DEFAULT_IS_FEATURE_ENABLED_BY_USER,
   WAKE_UP_STRATEGIES,
+  SPLIT_COLUMNS_MIN,
+  SPLIT_COLUMNS_MAX,
 } from '../../config';
 import { isMac } from '../../environment';
 
@@ -169,6 +171,10 @@ const messages = defineMessages({
     id: 'settings.app.form.splitMode',
     defaultMessage: 'Enable Split View Mode',
   },
+  splitColumns: {
+    id: 'settings.app.form.splitColumns',
+    defaultMessage: 'Number of columns',
+  },
   serviceRibbonWidth: {
     id: 'settings.app.form.serviceRibbonWidth',
     defaultMessage: 'Sidebar width',
@@ -196,6 +202,10 @@ const messages = defineMessages({
   showDisabledServices: {
     id: 'settings.app.form.showDisabledServices',
     defaultMessage: 'Display disabled services tabs',
+  },
+  showServiceName: {
+    id: 'settings.app.form.showServiceName',
+    defaultMessage: 'Display service name under the icon',
   },
   showMessageBadgeWhenMuted: {
     id: 'settings.app.form.showMessagesBadgesWhenMuted',
@@ -301,10 +311,12 @@ class EditSettingsScreen extends Component {
           settingsData.enableGlobalHideShortcut,
         ),
         showDisabledServices: Boolean(settingsData.showDisabledServices),
+        showServiceName: Boolean(settingsData.showServiceName),
         darkMode: Boolean(settingsData.darkMode),
         adaptableDarkMode: Boolean(settingsData.adaptableDarkMode),
         universalDarkMode: Boolean(settingsData.universalDarkMode),
         splitMode: Boolean(settingsData.splitMode),
+        splitColumns: Number(settingsData.splitColumns),
         serviceRibbonWidth: Number(settingsData.serviceRibbonWidth),
         iconSize: Number(settingsData.iconSize),
         enableLongPressServiceHint: Boolean(
@@ -334,14 +346,12 @@ class EditSettingsScreen extends Component {
       },
     });
 
-    if (workspaces.isFeatureActive) {
-      const { keepAllWorkspacesLoaded } = workspaces.settings;
-      if (
-        Boolean(keepAllWorkspacesLoaded) !==
-        Boolean(settingsData.keepAllWorkspacesLoaded)
-      ) {
-        workspaceActions.toggleKeepAllWorkspacesLoadedSetting();
-      }
+    const { keepAllWorkspacesLoaded } = workspaces.settings;
+    if (
+      Boolean(keepAllWorkspacesLoaded) !==
+      Boolean(settingsData.keepAllWorkspacesLoaded)
+    ) {
+      workspaceActions.toggleKeepAllWorkspacesLoadedSetting();
     }
 
     if (todos.isFeatureActive) {
@@ -517,7 +527,7 @@ class EditSettingsScreen extends Component {
         lockingFeatureEnabled: {
           label: intl.formatMessage(messages.enableLock),
           value: settings.all.app.lockingFeatureEnabled || false,
-          default: false,
+          default: DEFAULT_APP_SETTINGS.lockingFeatureEnabled,
         },
         lockedPassword: {
           label: intl.formatMessage(messages.lockPassword),
@@ -539,7 +549,7 @@ class EditSettingsScreen extends Component {
         scheduledDNDEnabled: {
           label: intl.formatMessage(messages.scheduledDNDEnabled),
           value: settings.all.app.scheduledDNDEnabled || false,
-          default: false,
+          default: DEFAULT_APP_SETTINGS.scheduledDNDEnabled,
         },
         scheduledDNDStart: {
           label: intl.formatMessage(messages.scheduledDNDStart),
@@ -557,6 +567,11 @@ class EditSettingsScreen extends Component {
           label: intl.formatMessage(messages.showDisabledServices),
           value: settings.all.app.showDisabledServices,
           default: DEFAULT_APP_SETTINGS.showDisabledServices,
+        },
+        showServiceName: {
+          label: intl.formatMessage(messages.showServiceName),
+          value: settings.all.app.showServiceName,
+          default: DEFAULT_APP_SETTINGS.showServiceName,
         },
         showMessageBadgeWhenMuted: {
           label: intl.formatMessage(messages.showMessageBadgeWhenMuted),
@@ -604,6 +619,13 @@ class EditSettingsScreen extends Component {
           label: intl.formatMessage(messages.splitMode),
           value: settings.all.app.splitMode,
           default: DEFAULT_APP_SETTINGS.splitMode,
+        },
+        splitColumns: {
+          label: `${intl.formatMessage(
+            messages.splitColumns,
+          )} (${SPLIT_COLUMNS_MIN}-${SPLIT_COLUMNS_MAX})`,
+          value: settings.all.app.splitColumns,
+          default: DEFAULT_APP_SETTINGS.splitColumns,
         },
         serviceRibbonWidth: {
           label: intl.formatMessage(messages.serviceRibbonWidth),
@@ -686,7 +708,7 @@ class EditSettingsScreen extends Component {
   }
 
   render() {
-    const { app, todos, workspaces, services } = this.props.stores;
+    const { app, services } = this.props.stores;
     const {
       updateStatus,
       updateStatusTypes,
@@ -711,14 +733,13 @@ class EditSettingsScreen extends Component {
           getCacheSize={() => app.cacheSize}
           isClearingAllCache={isClearingAllCache}
           onClearAllCache={clearAllCache}
-          isTodosEnabled={todos.isFeatureActive}
-          isWorkspaceEnabled={workspaces.isFeatureActive}
           lockingFeatureEnabled={lockingFeatureEnabled}
           automaticUpdates={this.props.stores.settings.app.automaticUpdates}
           isDarkmodeEnabled={this.props.stores.settings.app.darkMode}
           isAdaptableDarkModeEnabled={
             this.props.stores.settings.app.adaptableDarkMode
           }
+          isSplitModeEnabled={this.props.stores.settings.app.splitMode}
           isTodosActivated={this.props.stores.todos.isFeatureEnabledByUser}
           isUsingCustomTodoService={
             this.props.stores.todos.isUsingCustomTodoService
